@@ -10,7 +10,15 @@ exec_command=""
 # A phar file will need to be called by php
 prefixed_local_command="php $local_command"
 
-if [ -f "$vendor_command" ]; then
+if [[ $1 =~ ^(-e.*|--exec|--exec=.+)$ ]]; then
+    exec_command=$1;
+    exec_command="${exec_command#-e}"
+    exec_command="${exec_command#--exec}"
+    exec_command="${exec_command#=}"
+    [[ -z $exec_command ]] && shift && exec_command=$1
+    [[ $exec_command ]] && exec_command="$exec_command"
+    shift
+elif [ -f "$vendor_command" ]; then
     exec_command=$vendor_command
 elif hash $global_command 2>/dev/null; then
     exec_command=$global_command
